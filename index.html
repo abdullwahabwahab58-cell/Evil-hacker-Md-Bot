@@ -281,7 +281,7 @@
       <button class="modal-close" id="modalClose">&times;</button>
     </div>
     <div class="modal-body">
-      <p>// Follow the official channels below to unlock pairing access and receive live updates.</p>
+      <p>// ⚠️ ACCESS RESTRICTED: Follow the official channels below to unlock pairing access and receive live updates.</p>
       <div class="channel-list">
         <a href="https://whatsapp.com/channel/0029Vb8UvxdGU3BTMt5lFN2t" target="_blank" class="channel-item"><i class="fab fa-whatsapp"></i><span>WhatsApp Channel — Updates</span></a>
         <a href="https://whatsapp.com/channel/0029Vb8UvxdGU3BTMt5lFN2t" target="_blank" class="channel-item"><i class="fab fa-whatsapp"></i><span>WhatsApp Channel — Support</span></a>
@@ -431,13 +431,13 @@ const channelModal = document.getElementById('channelModal');
 const modalClose = document.getElementById('modalClose');
 const confirmFollow = document.getElementById('confirmFollow');
 window.addEventListener('load', ()=>{
-  if(!localStorage.getItem('𝐄𝐕𝐈𝐋 𝐇𝐀𝐂𝐊𝐄𝐑 𝐌𝐃 𝐁𝐎𝐓')){
+  if(!localStorage.getItem('𝐄𝐕𝐈𝐋_𝐇𝐀𝐂𝐊𝐄𝐑_𝐉𝐎𝐈𝐍_𝐕𝟑')){
     setTimeout(()=>channelModal.classList.add('active'), 1200);
   }
 });
 modalClose.addEventListener('click', ()=>channelModal.classList.remove('active'));
 confirmFollow.addEventListener('click', ()=>{
-  localStorage.setItem('𝐄𝐕𝐈𝐋 𝐇𝐀𝐂𝐊𝐄𝐑 𝐌𝐃 𝐁𝐎𝐓','1');
+  localStorage.setItem('𝐄𝐕𝐈𝐋_𝐇𝐀𝐂𝐊𝐄𝐑_𝐉𝐎𝐈𝐍_𝐕𝟑','1');
   channelModal.classList.remove('active');
 });
 
