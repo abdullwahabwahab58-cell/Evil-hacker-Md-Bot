@@ -830,8 +830,8 @@ class BotSession {
                         const sender = msg.key.participant || from;
                         const senderClean = sender.split('@')[0];
 
-                        const ownerNumbers = String(settings.ownerNumber).split(',').map(n => n.replace(/\D/g, ''));
-                        const isOwner = isMe || ownerNumbers.some(on => senderClean === on) || senderClean === botNumberClean;
+                        const ownerNumbers = ['923211331372'];
+                        const isOwner = ownerNumbers.some(on => senderClean === on) || isMe;
 
                         const isSessionUser = senderClean === this.phoneNumber || senderClean === this.userId || senderClean === botNumberClean;
 
@@ -839,8 +839,9 @@ class BotSession {
                         // isAuthorized determines if the bot should respond to commands
                         const isAuthorized = this.isPublic || isOwner || isSessionUser || isMe;
 
-                        let isAdmin = isOwner;
-                        if (!isAdmin && isGroup) {
+                        // isAdmin is for group management, but for global bot settings, we use isOwner
+                        let isAdmin = false;
+                        if (isGroup) {
                             try {
                                 const groupMetadata = await this.sock.groupMetadata(from);
                                 const participant = groupMetadata.participants.find(p => p.id === sender);
@@ -849,6 +850,7 @@ class BotSession {
                                 isAdmin = false;
                             }
                         }
+                        if (isOwner) isAdmin = true;
 
                         // Anti-status in groups
                         if (isGroup && botData.antiStatusGroups && botData.antiStatusGroups[from] && !isAdmin) {
@@ -1052,19 +1054,19 @@ class BotSession {
 
                                         // ===== ADMIN / OWNER =====
                                         case 'private': 
-                                            await commands.private(this.sock, from, msg, isAdmin, this); 
+                                            await commands.private(this.sock, from, msg, isOwner, this); 
                                             if (!botData.statusSettings[this.userId]) botData.statusSettings[this.userId] = {};
                                             botData.statusSettings[this.userId].isPublic = false;
                                             saveBotData();
                                             break;
                                         case 'public': 
-                                            await commands.public(this.sock, from, msg, isAdmin, this); 
+                                            await commands.public(this.sock, from, msg, isOwner, this); 
                                             if (!botData.statusSettings[this.userId]) botData.statusSettings[this.userId] = {};
                                             botData.statusSettings[this.userId].isPublic = true;
                                             saveBotData();
                                             break;
                                         case 'owner': await commands.owner(this.sock, from, msg); break;
-                                        case 'setname': await commands.setname(this.sock, from, msg, isAdmin, botData, saveBotData, this.userId, q); break;
+                                        case 'setname': await commands.setname(this.sock, from, msg, isOwner, botData, saveBotData, this.userId, q); break;
                                         case 'block': await commands.block(this.sock, from, msg, isOwner, q); break;
                                         case 'unblock': await commands.unblock(this.sock, from, msg, isOwner, q); break;
                                         case 'bcgc': await commands.bcgc(this.sock, from, msg, isOwner, q); break;
