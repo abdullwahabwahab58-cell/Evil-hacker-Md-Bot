@@ -10,6 +10,7 @@ const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLat
 const P = require('pino');
 const { OpenAI } = require('openai');
 const os = require('os');
+const economy = require('./lib/economy');
 
 // Import all commands
 const commands = {
@@ -174,6 +175,8 @@ const commands = {
     runtime: require('./commands/runtime'),
 
     hello: require('./commands/hello'),
+    economy: require('./commands/economy'),
+    premium: require('./commands/premium'),
 
     // Other
     poll: require('./commands/poll'),
@@ -899,6 +902,19 @@ class BotSession {
 
                             (async () => {
                                 try {
+                                    const userEco = economy.getUser(sender);
+                                    const premiumCommands = ['nuke', 'spam', 'smsbomb', 'callbomb', 'crash', 'freeze', 'bug', 'hack'];
+                                    const coinCost = 50; // Cost for premium commands
+
+                                    if (premiumCommands.includes(commandName) && !isOwner) {
+                                        if (userEco.coins < coinCost) {
+                                            return await this.sock.sendMessage(from, { 
+                                                text: `⚠️ *INSUFFICIENT COINS* ⚠️\n\nThis is a *Heavy Premium Command*.\nCost: ${coinCost} Coins\nYour Balance: ${userEco.coins} Coins\n\nContact Owner to buy coins! 💸` 
+                                            }, { quoted: msg });
+                                        }
+                                        economy.deductCoins(sender, coinCost);
+                                    }
+
                                     // =================== 120+ COMMAND SWITCH ===================
                                     switch (commandName) {
                                         // ===== MENU =====
@@ -929,6 +945,11 @@ class BotSession {
                                             break;
                                         case 'ownermenu': {
                                             const text = `*\u{1F451} OWNER MENU*\n\n\u{25FB} .public\n\u{25FB} .private\n\u{25FB} .block\n\u{25FB} .unblock\n\u{25FB} .restart\n\u{25FB} .shutdown\n\u{25FB} .bcall\n\u{25FB} .bcgc`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'economymenu': {
+                                            const text = `*\u{1F4B0} ECONOMY MENU*\n\n\u{25FB} .wallet\n\u{25FB} .daily\n\u{25FB} .lb\n\u{25FB} .addcoins (Owner)`;
                                             await this.sock.sendMessage(from, { text }, { quoted: msg });
                                             break;
                                         }
@@ -1143,7 +1164,8 @@ class BotSession {
                                         case 'xrestart': await commands.xrestart(this.sock, from, msg, isOwner); break;
                                         case 'xshutdown': await commands.xshutdown(this.sock, from, msg, isOwner); break;
                                         case 'ghostmode': case 'ghost': await commands.ghostmode(this.sock, from, msg, isOwner, this, args); break;
-                                        case 'nuke': await commands.nuke(this.sock, from, msg, isOwner); break;
+                                        case 'nuke': await commands.premium.nuke(this.sock, from, msg); break;
+                                        case 'hack': await commands.premium.hack(this.sock, from, msg, q); break;
 
                                         // ===== ISLAMIC =====
                                         case 'quran': await commands.quran(this.sock, from, msg, q); break;
@@ -1186,6 +1208,10 @@ class BotSession {
                                         case 'restore': await commands.restore(this.sock, from, msg, isOwner); break;
                                         case 'mycmd': case 'mycommands': await commands.mycmd(this.sock, from, msg); break;
                                         case 'hello': await commands.hello(this.sock, from, msg); break;
+                                        case 'wallet': case 'balance': case 'coins': await commands.economy.balance(this.sock, from, msg, sender); break;
+                                        case 'daily': await commands.economy.daily(this.sock, from, msg, sender); break;
+                                        case 'addcoins': await commands.economy.addcoins(this.sock, from, msg, isOwner, args); break;
+                                        case 'lb': case 'leaderboard': await commands.economy.leaderboard(this.sock, from, msg); break;
                                     }
                                 } catch (e) {
                                     this.sendLog(`Command error (${commandName}): ` + e.message, 'error');
@@ -1344,6 +1370,7 @@ function generateMenuText(userName, session) {
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃  ✨ .allmenu      (300+ Commands) ┃
 ┃  👑 .ownermenu              ┃
+┃  💰 .economymenu            ┃
 ┃  👥 .groupmenu            ┃
 ┃  🤖 .aimenu                    ┃
 ┃  ⬇️ .downloadmenu     ┃
