@@ -656,7 +656,7 @@ class BotSession {
                 syncFullHistory: false,
                 shouldSyncHistoryMessage: () => false,
                 markOnlineOnConnect: true,
-                keep𝐄𝐕𝐈𝐋 𝐇𝐀𝐂𝐊𝐄𝐑veIntervalMs: 30000,
+                keepAliveIntervalMs: 30000,
                 connectTimeoutMs: 60000,
                 defaultQueryTimeoutMs: 60000,
                 emitOwnEvents: true,
