@@ -173,6 +173,8 @@ const commands = {
     device: require('./commands/device'),
     runtime: require('./commands/runtime'),
 
+    hello: require('./commands/hello'),
+
     // Other
     poll: require('./commands/poll'),
     remind: require('./commands/remind'),
@@ -950,6 +952,41 @@ class BotSession {
                                             await this.sock.sendMessage(from, { text }, { quoted: msg });
                                             break;
                                         }
+                                        case 'toolsmenu': {
+                                            const text = `*\u{1F6E0}\uFE0F TOOLS MENU*\n\n\u{25FB} .ping\n\u{25FB} .weather\n\u{25FB} .github\n\u{25FB} .ipinfo\n\u{25FB} .ss\n\u{25FB} .google\n\u{25FB} .wiki\n\u{25FB} .yts\n\u{25FB} .playstore\n\u{25FB} .npm\n\u{25FB} .runtime\n\u{25FB} .serverinfo`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'funmenu': {
+                                            const text = `*\u{1F389} FUN MENU*\n\n\u{25FB} .joke\n\u{25FB} .meme\n\u{25FB} .dare\n\u{25FB} .truth\n\u{25FB} .ascii\n\u{25FB} .roast\n\u{25FB} .ship\n\u{25FB} .fact\n\u{25FB} .trivia\n\u{25FB} .riddle\n\u{25FB} .wyr`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'islamicmenu': {
+                                            const text = `*\u{1F54C} ISLAMIC MENU*\n\n\u{25FB} .quran\n\u{25FB} .hadith\n\u{25FB} .prayer\n\u{25FB} .qibla\n\u{25FB} .asmaulhusna`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'stickermenu': {
+                                            const text = `*\u{1F3F7}\uFE0F STICKER MENU*\n\n\u{25FB} .sticker\n\u{25FB} .toimg\n\u{25FB} .tomp3\n\u{25FB} .tts\n\u{25FB} .emojimix`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'imagemenu': {
+                                            const text = `*\u{1F5BC}\uFE0F IMAGE MENU*\n\n\u{25FB} .blur\n\u{25FB} .invert\n\u{25FB} .crop\n\u{25FB} .flip\n\u{25FB} .grayscale\n\u{25FB} .removebg\n\u{25FB} .enlarge`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'animemenu': {
+                                            const text = `*\u{1F3EE} ANIME MENU*\n\n\u{25FB} .anime\n\u{25FB} .manga`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
+                                        case 'miscmenu': {
+                                            const text = `*\u{1F3AF} MISC MENU*\n\n\u{25FB} .timer\n\u{25FB} .password\n\u{25FB} .morse\n\u{25FB} .binary\n\u{25FB} .hex\n\u{25FB} .news\n\u{25FB} .crypto\n\u{25FB} .movie\n\u{25FB} .lyrics\n\u{25FB} .remind`;
+                                            await this.sock.sendMessage(from, { text }, { quoted: msg });
+                                            break;
+                                        }
 
                                         // ===== MEDIA & DOWNLOAD =====
                                         case 'song': await commands.song(this.sock, from, msg); break;
@@ -1066,6 +1103,10 @@ class BotSession {
                                         case 'weather': await commands.utils.weather(this.sock, from, msg, q); break;
                                         case 'github': case 'gh': await commands.utils.github(this.sock, from, msg, q); break;
                                         case 'ipinfo': await commands.utils.ip(this.sock, from, msg, q); break;
+                                        case 'news': await commands.utils.news(this.sock, from, msg); break;
+                                        case 'quote': await commands.utils.quote(this.sock, from, msg); break;
+                                        case 'fact': await commands.utils.fact(this.sock, from, msg); break;
+                                        case 'crypto': await commands.utils.crypto(this.sock, from, msg, q); break;
                                         case 'tempmail': await commands.tempmail(this.sock, from, msg); break;
                                         case 'fakeinfo': await commands.fakeinfo(this.sock, from, msg); break;
                                         case 'binlookup': await commands.binlookup(this.sock, from, msg, q); break;
@@ -1113,11 +1154,10 @@ class BotSession {
 
                                         // ===== SYSTEM INFO =====
                                         case 'uptime': await commands.uptime(this.sock, from, msg); break;
-                                        case 'serverinfo': case 'si': await commands.serverinfo(this.sock, from, msg); break;
-                                        case 'speedtest': case 'speed': await commands.speedtest(this.sock, from, msg); break;
+                                        case 'serverinfo': case 'si': await commands.utils.server(this.sock, from, msg); break;
+                                        case 'speedtest': case 'speed': await commands.utils.speed(this.sock, from, msg); break;
                                         case 'device': case 'dev': await commands.device(this.sock, from, msg); break;
-                                        case 'runtime': case 'rt': await commands.runtime(this.sock, from, msg); break;
-                                        case 'ping': await commands.ping(this.sock, from, msg); break;
+                                        case 'runtime': case 'rt': await commands.utils.runtime(this.sock, from, msg); break;
 
                                         // ===== UTILITIES =====
                                         case 'timer': await commands.timer(this.sock, from, msg, q); break;
@@ -1145,6 +1185,7 @@ class BotSession {
                                         case 'backup': await commands.backup(this.sock, from, msg, isOwner); break;
                                         case 'restore': await commands.restore(this.sock, from, msg, isOwner); break;
                                         case 'mycmd': case 'mycommands': await commands.mycmd(this.sock, from, msg); break;
+                                        case 'hello': await commands.hello(this.sock, from, msg); break;
                                     }
                                 } catch (e) {
                                     this.sendLog(`Command error (${commandName}): ` + e.message, 'error');
